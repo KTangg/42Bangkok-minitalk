@@ -6,7 +6,7 @@
 /*   By: spoolpra <spoolpra@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 14:03:11 by spoolpra          #+#    #+#             */
-/*   Updated: 2022/03/04 19:28:17 by spoolpra         ###   ########.fr       */
+/*   Updated: 2022/03/04 20:50:45 by spoolpra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static void	sent_bit(t_uint8 c, int server_pid, size_t bit_index)
 		if (kill(server_pid, SIGUSR2) == -1)
 			sent_error();
 	}
-	usleep(100);
+	usleep(600);
 }
 
 int	main(int argc, char *argv[])
