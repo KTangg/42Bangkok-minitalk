@@ -6,7 +6,7 @@
 /*   By: spoolpra <spoolpra@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 14:03:11 by spoolpra          #+#    #+#             */
-/*   Updated: 2022/03/04 16:14:58 by spoolpra         ###   ########.fr       */
+/*   Updated: 2022/03/04 19:28:17 by spoolpra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,19 @@ static void	show_usage(void)
 	exit(1);
 }
 
-static void	success(int signum)
+static void	sigusr_handle(int signo, siginfo_t *info, void *other)
 {
-	if (signum == SIGUSR1)
+	(void)info;
+	(void)other;
+	if (signo == SIGUSR1)
 		ft_putendl_fd("SIGUSR1 recieved by server", 1);
-	if (signum == SIGUSR2)
+	if (signo == SIGUSR2)
 		ft_putendl_fd("SIGUSR2 recieved by server", 1);
 }
 
 static void	sent_error(void)
 {
-	ft_putendl_fd("Error while sending data to server PID", 2);
+	ft_putendl_fd("Error while signal to server PID", 2);
 	exit(2);
 }
 
@@ -41,17 +43,16 @@ static void	sent_bit(t_uint8 c, int server_pid, size_t bit_index)
 	{
 		if (kill(server_pid, SIGUSR1) == -1)
 			sent_error();
-		usleep(50);
 	}
 	else
 	{
 		if (kill(server_pid, SIGUSR2) == -1)
 			sent_error();
-		usleep(50);
 	}
+	usleep(100);
 }
 
-int	main(int argc, char **argv)
+int	main(int argc, char *argv[])
 {
 	int					server_pid;
 	char				*str;
@@ -59,10 +60,10 @@ int	main(int argc, char **argv)
 
 	if (argc != 3)
 		show_usage();
-	printf("%s", argv[2]);
 	server_pid = ft_atoi(argv[1]);
 	str = argv[2];
-	sa.sa_handler = success;
+	sa.sa_sigaction = sigusr_handle;
+	sa.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	while (*str != '\0')
